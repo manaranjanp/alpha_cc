@@ -201,15 +201,50 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Stock Alpha & Beta Analyzer
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Calculate and visualize stock performance metrics using regression analysis
-          </p>
+      {/* Hero Header */}
+      <header className="gradient-mesh geometric-grid relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10">
+          {/* Animated title */}
+          <div className="text-center space-y-6">
+            <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl font-bold text-white opacity-0 animate-fade-in-up">
+              <span className="block">Stock Alpha & Beta</span>
+              <span className="block mt-2 bg-gradient-to-r from-cyan-light via-cyan to-cyan-dark bg-clip-text text-transparent">
+                Analyzer
+              </span>
+            </h1>
+
+            <p className="font-body text-lg sm:text-xl text-slate-custom max-w-3xl mx-auto opacity-0 animate-fade-in-up delay-200">
+              Calculate and visualize stock performance metrics using regression analysis
+            </p>
+
+            {/* Decorative elements */}
+            <div className="flex justify-center gap-8 mt-8 opacity-0 animate-fade-in-up delay-300">
+              <div className="flex items-center gap-2 text-cyan-light">
+                <div className="w-2 h-2 bg-cyan rounded-full animate-pulse"></div>
+                <span className="text-sm font-body font-medium">Alpha Analysis</span>
+              </div>
+              <div className="flex items-center gap-2 text-gold-light">
+                <div className="w-2 h-2 bg-gold rounded-full animate-pulse"></div>
+                <span className="text-sm font-body font-medium">Beta Calculation</span>
+              </div>
+              <div className="flex items-center gap-2 text-cyan-light">
+                <div className="w-2 h-2 bg-cyan rounded-full animate-pulse"></div>
+                <span className="text-sm font-body font-medium">Regression Engine</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating decorative shapes */}
+          <div className="absolute top-10 left-10 w-20 h-20 border-2 border-cyan/20 rounded-lg rotate-12 float-animation hidden lg:block"></div>
+          <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-gold/20 rounded-full float-animation" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-1/2 right-20 w-12 h-12 border-2 border-cyan/20 rounded-lg -rotate-12 float-animation" style={{animationDelay: '4s'}}></div>
+        </div>
+
+        {/* Bottom wave decoration */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-12 sm:h-16">
+            <path d="M0,0 C150,80 350,0 600,40 C850,80 1050,0 1200,40 L1200,120 L0,120 Z" fill="#f8fafc" opacity="0.8"></path>
+          </svg>
         </div>
       </header>
 
@@ -483,11 +518,23 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <p className="text-sm text-gray-600 text-center">
-            Stock Alpha & Beta Analyzer - Client-side financial analysis tool
-          </p>
+      <footer className="gradient-mesh mt-12 relative">
+        <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
+          <div className="text-center space-y-3">
+            <p className="text-sm font-body text-slate-custom">
+              Stock Alpha & Beta Analyzer
+            </p>
+            <p className="text-xs font-body text-slate-custom/70">
+              Client-side financial analysis tool powered by advanced regression analytics
+            </p>
+            <div className="flex justify-center gap-4 pt-2">
+              <span className="text-xs text-cyan-light font-medium">Secure</span>
+              <span className="text-cyan/30">•</span>
+              <span className="text-xs text-cyan-light font-medium">Private</span>
+              <span className="text-cyan/30">•</span>
+              <span className="text-xs text-cyan-light font-medium">Powerful</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
