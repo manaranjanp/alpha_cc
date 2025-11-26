@@ -38,15 +38,14 @@ const FileUpload = ({ onFileUpload, isLoading, validationReport }) => {
   return (
     <div className="w-full">
       <div
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+        className={`bg-white border-2 border-dashed rounded-lg transition-all ${
           isDragging
-            ? 'border-primary bg-blue-50'
-            : 'border-gray-300 hover:border-primary hover:bg-gray-50'
+            ? 'border-primary bg-blue-50 shadow-lg'
+            : 'border-gray-300 hover:border-primary hover:shadow-md'
         } ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={handleClick}
       >
         <input
           ref={fileInputRef}
@@ -56,31 +55,54 @@ const FileUpload = ({ onFileUpload, isLoading, validationReport }) => {
           className="hidden"
         />
 
-        <div className="flex flex-col items-center space-y-3">
-          <svg
-            className="w-10 h-10 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-            />
-          </svg>
-
-          <div>
-            <p className="text-base font-medium text-gray-700">
-              {isLoading ? 'Processing...' : 'Drag & Drop CSV/XLSX file here'}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">or click to browse</p>
+        <div className="flex items-center gap-4 p-4">
+          {/* Icon Section */}
+          <div className="flex-shrink-0">
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${
+              isDragging ? 'bg-primary/10' : 'bg-gray-100'
+            }`}>
+              <svg
+                className={`w-6 h-6 transition-colors ${
+                  isDragging ? 'text-primary' : 'text-gray-500'
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+            </div>
           </div>
 
-          <div className="text-xs text-gray-500 mt-2">
-            <p className="font-medium">Required columns:</p>
-            <p>Date (mm-dd-yyyy), Stock Prices, Market Index</p>
+          {/* Text Section */}
+          <div className="flex-grow text-left">
+            <p className="text-sm font-semibold text-gray-900">
+              {isLoading ? 'Processing file...' : 'Upload your data file'}
+            </p>
+            <p className="text-xs text-gray-600 mt-0.5">
+              Drag & drop CSV/XLSX file here, or click browse button
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              <span className="font-medium">Required:</span> Date (mm-dd-yyyy), Stock Prices, Market Index
+            </p>
+          </div>
+
+          {/* Button Section */}
+          <div className="flex-shrink-0">
+            <button
+              onClick={handleClick}
+              disabled={isLoading}
+              className="px-4 py-2 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90
+                         transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            >
+              {isLoading ? 'Loading...' : 'Browse Files'}
+            </button>
           </div>
         </div>
       </div>
