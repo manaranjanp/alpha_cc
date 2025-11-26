@@ -5,6 +5,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), viteSingleFile()],
+  base: './',  // Use relative paths for serving from any location
   build: {
     target: 'esnext',
     assetsInlineLimit: 100000000,
