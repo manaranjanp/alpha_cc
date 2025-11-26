@@ -64,6 +64,32 @@ Date,STOCK1,STOCK2,MARKETINDEX
 
 A sample data file is included in `public/sample_data.csv` with 5 years of historical data for RELIANCE, TCS, INFY, and NIFTY50.
 
+## Downloading Stock Data
+
+A Python script is provided to download stock prices from Yahoo Finance:
+
+```bash
+# Install dependencies
+pip install -r scripts/requirements.txt
+
+# Download Indian stocks
+python scripts/get_stock_prices.py \
+  -stocks RELIANCE.NS,TCS.NS,INFY.NS \
+  -index ^NSEI \
+  -from 01-01-2020 \
+  -to 12-31-2024
+
+# Download US stocks
+python scripts/get_stock_prices.py \
+  -stocks AAPL,GOOGL,MSFT \
+  -index ^GSPC \
+  -from 01-01-2020 \
+  -to 12-31-2024 \
+  -output us_stocks.csv
+```
+
+See [scripts/README.md](scripts/README.md) for detailed usage instructions and examples.
+
 ## Key Metrics
 
 ### Alpha (α)
