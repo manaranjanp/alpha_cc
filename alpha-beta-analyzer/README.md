@@ -191,6 +191,25 @@ This creates a single HTML file in `dist/index.html` that can be:
 - Hosted on any static file server
 - Shared directly as a file
 
+### Running with Python HTTP Server
+
+The easiest way to test or deploy the built application:
+
+```bash
+# Build the app
+npm run build
+
+# Navigate to dist directory
+cd dist
+
+# Start Python HTTP server
+python3 -m http.server 8000
+
+# Open browser to http://localhost:8000
+```
+
+For detailed deployment instructions (Nginx, Apache, static hosting, etc.), see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Limitations
 
 - Minimum 3 years of data required for rolling analysis
