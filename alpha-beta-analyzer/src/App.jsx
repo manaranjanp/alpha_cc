@@ -200,51 +200,36 @@ function App() {
   const isRollingReady = rollingResults && !rollingResults.insufficient;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-cream">
       {/* Hero Header */}
-      <header className="gradient-mesh geometric-grid relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10">
-          {/* Animated title */}
-          <div className="text-center space-y-6">
-            <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl font-bold text-white opacity-0 animate-fade-in-up">
-              <span className="block">Stock Alpha & Beta</span>
-              <span className="block mt-2 bg-gradient-to-r from-cyan-light via-cyan to-cyan-dark bg-clip-text text-transparent">
-                Analyzer
-              </span>
+      <header className="gradient-mesh relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
+          {/* Title */}
+          <div className="text-center space-y-4">
+            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-cream opacity-0 animate-fade-in-up">
+              Stock Alpha & Beta Analyzer
             </h1>
 
-            <p className="font-body text-lg sm:text-xl text-slate-custom max-w-3xl mx-auto opacity-0 animate-fade-in-up delay-200">
+            <p className="font-body text-base sm:text-lg text-cream/80 max-w-3xl mx-auto opacity-0 animate-fade-in-up delay-200">
               Calculate and visualize stock performance metrics using regression analysis
             </p>
 
-            {/* Decorative elements */}
-            <div className="flex justify-center gap-8 mt-8 opacity-0 animate-fade-in-up delay-300">
-              <div className="flex items-center gap-2 text-cyan-light">
-                <div className="w-2 h-2 bg-cyan rounded-full animate-pulse"></div>
-                <span className="text-sm font-body font-medium">Alpha Analysis</span>
+            {/* Minimal indicators */}
+            <div className="flex justify-center gap-6 mt-6 opacity-0 animate-fade-in-up delay-300">
+              <div className="flex items-center gap-2 text-cream/70">
+                <div className="w-1.5 h-1.5 bg-accent-orange rounded-full"></div>
+                <span className="text-sm font-body">Alpha Analysis</span>
               </div>
-              <div className="flex items-center gap-2 text-gold-light">
-                <div className="w-2 h-2 bg-gold rounded-full animate-pulse"></div>
-                <span className="text-sm font-body font-medium">Beta Calculation</span>
+              <div className="flex items-center gap-2 text-cream/70">
+                <div className="w-1.5 h-1.5 bg-accent-orange rounded-full"></div>
+                <span className="text-sm font-body">Beta Calculation</span>
               </div>
-              <div className="flex items-center gap-2 text-cyan-light">
-                <div className="w-2 h-2 bg-cyan rounded-full animate-pulse"></div>
-                <span className="text-sm font-body font-medium">Regression Engine</span>
+              <div className="flex items-center gap-2 text-cream/70">
+                <div className="w-1.5 h-1.5 bg-accent-orange rounded-full"></div>
+                <span className="text-sm font-body">Regression Engine</span>
               </div>
             </div>
           </div>
-
-          {/* Floating decorative shapes */}
-          <div className="absolute top-10 left-10 w-20 h-20 border-2 border-cyan/20 rounded-lg rotate-12 float-animation hidden lg:block"></div>
-          <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-gold/20 rounded-full float-animation" style={{animationDelay: '2s'}}></div>
-          <div className="absolute top-1/2 right-20 w-12 h-12 border-2 border-cyan/20 rounded-lg -rotate-12 float-animation" style={{animationDelay: '4s'}}></div>
-        </div>
-
-        {/* Bottom wave decoration */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-12 sm:h-16">
-            <path d="M0,0 C150,80 350,0 600,40 C850,80 1050,0 1200,40 L1200,120 L0,120 Z" fill="#f8fafc" opacity="0.8"></path>
-          </svg>
         </div>
       </header>
 
@@ -277,26 +262,26 @@ function App() {
 
             {/* Tabs and Content */}
             {isAnalysisReady && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="bg-white rounded-lg shadow-soft border border-dark-slate/10">
                 {/* Tab Navigation */}
-                <div className="border-b border-gray-200">
+                <div className="border-b border-dark-slate/10">
                   <nav className="flex space-x-4 px-4">
                     <button
                       onClick={() => setActiveTab('static')}
-                      className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                      className={`py-3 px-4 font-heading text-sm font-medium border-b-2 transition-colors ${
                         activeTab === 'static'
-                          ? 'border-primary text-primary'
-                          : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                          ? 'border-accent-orange text-accent-orange'
+                          : 'border-transparent text-slate-medium hover:text-dark-slate hover:border-slate-light'
                       }`}
                     >
                       Alpha & Beta Analysis
                     </button>
                     <button
                       onClick={() => setActiveTab('rolling')}
-                      className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                      className={`py-3 px-4 font-heading text-sm font-medium border-b-2 transition-colors ${
                         activeTab === 'rolling'
-                          ? 'border-primary text-primary'
-                          : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                          ? 'border-accent-orange text-accent-orange'
+                          : 'border-transparent text-slate-medium hover:text-dark-slate hover:border-slate-light'
                       }`}
                     >
                       Rolling Trends
@@ -308,91 +293,91 @@ function App() {
                 <div className="p-6">
                   {activeTab === 'static' && (
                     <div>
-                      <h2 className="text-xl font-semibold mb-4">
+                      <h2 className="font-heading text-xl font-semibold mb-4 text-dark-slate">
                         {selectedStock} vs {selectedIndex} ({period / 52} Year Analysis)
                       </h2>
 
                       {/* Metrics Summary */}
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                          <p className="text-sm text-gray-600 mb-1">Alpha</p>
-                          <p className={`text-2xl font-bold ${analysisResults.alpha > 0 ? 'text-success' : 'text-danger'}`}>
+                        <div className="bg-cream-dark rounded-lg p-4 border border-dark-slate/10">
+                          <p className="font-heading text-sm text-slate-medium mb-1">Alpha</p>
+                          <p className={`font-heading text-2xl font-bold ${analysisResults.alpha > 0 ? 'text-success' : 'text-danger'}`}>
                             {analysisResults.alpha > 0 ? '+' : ''}
                             {analysisResults.alpha.toFixed(2)}%
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="font-body text-xs text-slate-light mt-1">
                             {analysisResults.alpha > 0 ? 'Outperforming' : 'Underperforming'} market
                           </p>
                         </div>
 
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                          <p className="text-sm text-gray-600 mb-1">Beta</p>
-                          <p className={`text-2xl font-bold ${analysisResults.beta > 1.2 || analysisResults.beta < 0.8 ? 'font-extrabold' : ''}`}>
+                        <div className="bg-cream-dark rounded-lg p-4 border border-dark-slate/10">
+                          <p className="font-heading text-sm text-slate-medium mb-1">Beta</p>
+                          <p className={`font-heading text-2xl font-bold text-dark-slate ${analysisResults.beta > 1.2 || analysisResults.beta < 0.8 ? 'font-extrabold' : ''}`}>
                             {analysisResults.beta.toFixed(2)}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="font-body text-xs text-slate-light mt-1">
                             {Math.abs((analysisResults.beta - 1) * 100).toFixed(0)}%{' '}
                             {analysisResults.beta > 1 ? 'more' : 'less'} volatile
                           </p>
                         </div>
 
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                          <p className="text-sm text-gray-600 mb-1">R-Squared</p>
-                          <p className="text-2xl font-bold text-gray-900">
+                        <div className="bg-cream-dark rounded-lg p-4 border border-dark-slate/10">
+                          <p className="font-heading text-sm text-slate-medium mb-1">R-Squared</p>
+                          <p className="font-heading text-2xl font-bold text-dark-slate">
                             {analysisResults.rSquared.toFixed(3)}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="font-body text-xs text-slate-light mt-1">
                             {(analysisResults.rSquared * 100).toFixed(0)}% variance explained
                           </p>
                         </div>
 
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                          <p className="text-sm text-gray-600 mb-1">Data Points</p>
-                          <p className="text-2xl font-bold text-gray-900">
+                        <div className="bg-cream-dark rounded-lg p-4 border border-dark-slate/10">
+                          <p className="font-heading text-sm text-slate-medium mb-1">Data Points</p>
+                          <p className="font-heading text-2xl font-bold text-dark-slate">
                             {analysisResults.statistics.dataPointsCount}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="font-body text-xs text-slate-light mt-1">
                             Weekly returns analyzed
                           </p>
                         </div>
                       </div>
 
                       {/* Statistics Summary */}
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                        <h3 className="font-medium text-blue-900 mb-2">Statistical Summary</h3>
+                      <div className="bg-accent-orange/5 border border-accent-orange/20 rounded-lg p-4 mb-6">
+                        <h3 className="font-heading font-semibold text-dark-slate mb-3">Statistical Summary</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div>
-                            <p className="text-blue-700">Mean Stock Return</p>
-                            <p className="font-medium text-blue-900">
+                            <p className="font-heading text-slate-medium">Mean Stock Return</p>
+                            <p className="font-heading font-semibold text-dark-slate mt-1">
                               {analysisResults.statistics.meanStockReturn.toFixed(2)}%
                             </p>
                           </div>
                           <div>
-                            <p className="text-blue-700">Mean Market Return</p>
-                            <p className="font-medium text-blue-900">
+                            <p className="font-heading text-slate-medium">Mean Market Return</p>
+                            <p className="font-heading font-semibold text-dark-slate mt-1">
                               {analysisResults.statistics.meanMarketReturn.toFixed(2)}%
                             </p>
                           </div>
                           <div>
-                            <p className="text-blue-700">Stock Volatility</p>
-                            <p className="font-medium text-blue-900">
+                            <p className="font-heading text-slate-medium">Stock Volatility</p>
+                            <p className="font-heading font-semibold text-dark-slate mt-1">
                               {analysisResults.statistics.stdStockReturn.toFixed(2)}%
                             </p>
                           </div>
                           <div>
-                            <p className="text-blue-700">Correlation</p>
-                            <p className="font-medium text-blue-900">
+                            <p className="font-heading text-slate-medium">Correlation</p>
+                            <p className="font-heading font-semibold text-dark-slate mt-1">
                               {analysisResults.statistics.correlation.toFixed(3)}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="text-sm text-gray-600">
-                        <p className="mb-2">
-                          <strong>Interpretation:</strong>
+                      <div className="font-body text-sm text-slate-medium">
+                        <p className="mb-2 font-heading font-semibold text-dark-slate">
+                          Interpretation:
                         </p>
-                        <ul className="list-disc list-inside space-y-1 ml-2">
+                        <ul className="list-disc list-inside space-y-1.5 ml-2">
                           <li>
                             <strong>Alpha:</strong> {selectedStock}{' '}
                             {analysisResults.alpha > 0 ? 'generated' : 'lost'}{' '}
@@ -416,12 +401,12 @@ function App() {
                     <div>
                       {isRollingReady ? (
                         <>
-                          <h2 className="text-xl font-semibold mb-4">
+                          <h2 className="font-heading text-xl font-semibold mb-4 text-dark-slate">
                             Rolling Alpha & Beta Trends for {selectedStock}
                           </h2>
 
-                          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                            <p className="text-sm text-yellow-800">
+                          <div className="bg-accent-orange/5 border border-accent-orange/20 rounded-lg p-4 mb-4">
+                            <p className="font-body text-sm text-slate-medium">
                               Rolling analysis uses a 3-year lookback window, calculated quarterly.
                               Each point represents the alpha/beta for the preceding 3 years.
                             </p>
@@ -429,43 +414,43 @@ function App() {
 
                           {/* Rolling Data Table */}
                           <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                              <thead className="bg-gray-50">
+                            <table className="min-w-full divide-y divide-dark-slate/10">
+                              <thead className="bg-cream-dark">
                                 <tr>
-                                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                  <th className="px-4 py-3 text-left text-xs font-heading font-medium text-slate-medium uppercase">
                                     Quarter
                                   </th>
-                                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                  <th className="px-4 py-3 text-left text-xs font-heading font-medium text-slate-medium uppercase">
                                     Alpha (%)
                                   </th>
-                                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                  <th className="px-4 py-3 text-left text-xs font-heading font-medium text-slate-medium uppercase">
                                     Beta
                                   </th>
-                                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                  <th className="px-4 py-3 text-left text-xs font-heading font-medium text-slate-medium uppercase">
                                     R²
                                   </th>
-                                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                  <th className="px-4 py-3 text-left text-xs font-heading font-medium text-slate-medium uppercase">
                                     Data Period
                                   </th>
                                 </tr>
                               </thead>
-                              <tbody className="bg-white divide-y divide-gray-200">
+                              <tbody className="bg-white divide-y divide-dark-slate/10">
                                 {rollingResults.data.map((item, index) => (
-                                  <tr key={index} className="hover:bg-gray-50">
-                                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                                  <tr key={index} className="hover:bg-cream/50 transition-colors">
+                                    <td className="px-4 py-3 font-heading text-sm font-medium text-dark-slate">
                                       {item.quarter}
                                     </td>
-                                    <td className={`px-4 py-3 text-sm font-medium ${item.alpha > 0 ? 'text-success' : 'text-danger'}`}>
+                                    <td className={`px-4 py-3 font-heading text-sm font-semibold ${item.alpha > 0 ? 'text-success' : 'text-danger'}`}>
                                       {item.alpha > 0 ? '+' : ''}
                                       {item.alpha.toFixed(2)}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-gray-900">
+                                    <td className="px-4 py-3 font-heading text-sm text-dark-slate">
                                       {item.beta.toFixed(3)}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-gray-900">
+                                    <td className="px-4 py-3 font-heading text-sm text-dark-slate">
                                       {item.rSquared.toFixed(3)}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-gray-500">
+                                    <td className="px-4 py-3 font-body text-sm text-slate-light">
                                       {item.dataPeriodStart.toLocaleDateString()} -{' '}
                                       {item.dataPeriodEnd.toLocaleDateString()}
                                     </td>
@@ -476,11 +461,11 @@ function App() {
                           </div>
                         </>
                       ) : (
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-                          <p className="text-yellow-800 font-medium">
+                        <div className="bg-warning/10 border border-warning/30 rounded-lg p-6 text-center">
+                          <p className="font-heading text-dark-slate font-medium">
                             {rollingResults?.message || 'Insufficient data for rolling analysis'}
                           </p>
-                          <p className="text-sm text-yellow-700 mt-2">
+                          <p className="font-body text-sm text-slate-medium mt-2">
                             Rolling analysis requires at least 3 years (156 weeks) of historical data.
                           </p>
                         </div>
@@ -495,45 +480,45 @@ function App() {
 
         {/* Getting Started Guide - Only show when no data */}
         {!parsedData && !isLoading && (
-          <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-lg border border-gray-200 p-8">
+          <div className="bg-white rounded-lg border border-dark-slate/10 p-8 shadow-soft">
             <div className="max-w-3xl mx-auto">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+              <h3 className="font-heading text-xl font-semibold text-dark-slate mb-4 text-center">
                 Get Started with Alpha & Beta Analysis
               </h3>
 
               <div className="grid md:grid-cols-3 gap-6 mt-6">
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 bg-accent-orange/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-6 h-6 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">1. Upload Data</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-heading font-semibold text-dark-slate mb-2">1. Upload Data</h4>
+                  <p className="font-body text-sm text-slate-medium">
                     Upload CSV or XLSX with dates, stock prices, and market index
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-gold/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 bg-accent-orange/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-6 h-6 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                     </svg>
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">2. Configure Settings</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-heading font-semibold text-dark-slate mb-2">2. Configure Settings</h4>
+                  <p className="font-body text-sm text-slate-medium">
                     Select stocks, indices, risk-free rate, and analysis period
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 bg-accent-orange/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-6 h-6 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">3. View Results</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-heading font-semibold text-dark-slate mb-2">3. View Results</h4>
+                  <p className="font-body text-sm text-slate-medium">
                     Analyze alpha, beta, and rolling trends with detailed metrics
                   </p>
                 </div>
@@ -547,18 +532,18 @@ function App() {
       <footer className="gradient-mesh mt-12 relative">
         <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
           <div className="text-center space-y-3">
-            <p className="text-sm font-body text-slate-custom">
+            <p className="font-body text-sm text-cream/90">
               Stock Alpha & Beta Analyzer
             </p>
-            <p className="text-xs font-body text-slate-custom/70">
+            <p className="font-body text-xs text-cream/60">
               Client-side financial analysis tool powered by advanced regression analytics
             </p>
             <div className="flex justify-center gap-4 pt-2">
-              <span className="text-xs text-cyan-light font-medium">Secure</span>
-              <span className="text-cyan/30">•</span>
-              <span className="text-xs text-cyan-light font-medium">Private</span>
-              <span className="text-cyan/30">•</span>
-              <span className="text-xs text-cyan-light font-medium">Powerful</span>
+              <span className="font-heading text-xs text-cream/70 font-medium">Secure</span>
+              <span className="text-cream/30">•</span>
+              <span className="font-heading text-xs text-cream/70 font-medium">Private</span>
+              <span className="text-cream/30">•</span>
+              <span className="font-heading text-xs text-cream/70 font-medium">Powerful</span>
             </div>
           </div>
         </div>
