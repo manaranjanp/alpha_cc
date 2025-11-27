@@ -21,18 +21,18 @@ const GlobalSettings = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+    <div className="bg-white rounded-lg shadow-soft border border-dark-slate/10 p-4 mb-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Stock Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block font-heading text-sm font-medium text-dark-slate mb-1">
             Stock
           </label>
           <select
             value={selectedStock}
             onChange={(e) => setSelectedStock(e.target.value)}
             disabled={disabled || stockColumns.length === 0}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="font-body w-full px-3 py-2 border border-dark-slate/20 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent disabled:bg-cream-dark disabled:cursor-not-allowed"
           >
             <option value="">Select Stock</option>
             {stockColumns.map((stock) => (
@@ -45,14 +45,14 @@ const GlobalSettings = ({
 
         {/* Market Index Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block font-heading text-sm font-medium text-dark-slate mb-1">
             Market Index
           </label>
           <select
             value={selectedIndex}
             onChange={(e) => setSelectedIndex(e.target.value)}
             disabled={disabled || indexColumns.length === 0}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="font-body w-full px-3 py-2 border border-dark-slate/20 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent disabled:bg-cream-dark disabled:cursor-not-allowed"
           >
             <option value="">Select Index</option>
             {indexColumns.map((index) => (
@@ -65,7 +65,7 @@ const GlobalSettings = ({
 
         {/* Risk-Free Rate */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block font-heading text-sm font-medium text-dark-slate mb-1">
             Risk-Free Rate (%)
           </label>
           <input
@@ -76,44 +76,44 @@ const GlobalSettings = ({
             value={riskFreeRate}
             onChange={handleRiskFreeRateChange}
             disabled={disabled}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="font-body w-full px-3 py-2 border border-dark-slate/20 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent disabled:bg-cream-dark disabled:cursor-not-allowed"
             placeholder="5.0"
           />
         </div>
 
         {/* Period Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block font-heading text-sm font-medium text-dark-slate mb-1">
             Analysis Period
           </label>
           <div className="flex items-center space-x-4 h-10">
-            <label className="inline-flex items-center">
+            <label className="inline-flex items-center cursor-pointer">
               <input
                 type="radio"
                 value={CALCULATION_PERIODS.THREE_YEARS}
                 checked={period === CALCULATION_PERIODS.THREE_YEARS}
                 onChange={(e) => setPeriod(parseInt(e.target.value))}
                 disabled={disabled}
-                className="form-radio text-primary focus:ring-primary disabled:opacity-50"
+                className="form-radio text-accent-orange focus:ring-accent-orange disabled:opacity-50"
               />
-              <span className="ml-2 text-sm">3 Years</span>
+              <span className="ml-2 font-body text-sm text-dark-slate">3 Years</span>
             </label>
-            <label className="inline-flex items-center">
+            <label className="inline-flex items-center cursor-pointer">
               <input
                 type="radio"
                 value={CALCULATION_PERIODS.FIVE_YEARS}
                 checked={period === CALCULATION_PERIODS.FIVE_YEARS}
                 onChange={(e) => setPeriod(parseInt(e.target.value))}
                 disabled={disabled}
-                className="form-radio text-primary focus:ring-primary disabled:opacity-50"
+                className="form-radio text-accent-orange focus:ring-accent-orange disabled:opacity-50"
               />
-              <span className="ml-2 text-sm">5 Years</span>
+              <span className="ml-2 font-body text-sm text-dark-slate">5 Years</span>
             </label>
           </div>
         </div>
       </div>
 
-      <div className="mt-3 text-xs text-gray-500">
+      <div className="mt-3 font-body text-xs text-slate-light">
         <p>Date format: mm-dd-yyyy | Weekly returns are used for all calculations</p>
       </div>
     </div>
