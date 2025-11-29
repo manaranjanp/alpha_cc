@@ -3,7 +3,7 @@ import { useStore } from '../../store/useStore';
 import { calculateMultipleWeeklyReturns, alignWeeklyReturns, filterByPeriod } from '../../utils/returnCalculations';
 import { performAlphaBetaAnalysis } from '../../utils/regressionEngine';
 import { calculateRollingAlphaBeta, checkRollingDataSufficiency } from '../../utils/rollingCalculations';
-import { CALCULATION_PERIODS } from '../../constants/config';
+import { CALCULATION_PERIODS, ROLLING_WINDOW_WEEKS } from '../../constants/config';
 
 function StrategyConfig() {
   const stockColumns = useStore(state => state.stockColumns);
@@ -92,9 +92,19 @@ function StrategyConfig() {
       setAnalysisResults(analysisResults);
 
       // Calculate rolling analysis
-      const sufficiency = checkRollingDataSufficiency(aligned);
+      // Rolling needs full aligned data for lookback, but we want results for the selected period
+      const rollingMinRequired = period + ROLLING_WINDOW_WEEKS;
+      const sufficiency = {
+        isSufficient: aligned.length >= rollingMinRequired,
+        required: rollingMinRequired,
+        available: aligned.length,
+        message: aligned.length < rollingMinRequired
+          ? `Insufficient data for rolling analysis in the selected period. Need ${rollingMinRequired} weeks (${period} weeks for selected period + ${ROLLING_WINDOW_WEEKS} weeks for lookback), have ${aligned.length} weeks.`
+          : `Sufficient data available for rolling analysis.`,
+      };
 
       if (sufficiency.isSufficient) {
+        // Calculate rolling using full aligned dataset
         const rolling = calculateRollingAlphaBeta(
           aligned,
           selectedStock,
@@ -102,9 +112,15 @@ function StrategyConfig() {
           parseFloat(riskFreeRate)
         );
 
+        // Filter rolling results to only include those within the selected period
+        const periodStartDate = filteredData.length > 0 ? filteredData[0].weekEndDate : null;
+        const filteredRolling = periodStartDate
+          ? rolling.filter(r => new Date(r.date) >= new Date(periodStartDate))
+          : rolling;
+
         setRollingResults({
           insufficient: false,
-          data: rolling,
+          data: filteredRolling,
           stockName: selectedStock,
           indexName: selectedIndex,
         });
