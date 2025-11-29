@@ -88,13 +88,6 @@ const FileUpload = () => {
         if (indices.length > 0) {
           setSelectedIndex(indices[0]);
         }
-
-        // Move to next step if valid
-        if (validation.isValid) {
-          setTimeout(() => {
-            setCurrentStep('configure');
-          }, 1500);
-        }
       }
     } catch (error) {
       setValidationReport({
@@ -216,7 +209,14 @@ const FileUpload = () => {
                   <p className="font-semibold text-gray-900">{validationReport.stats.yearsOfData}</p>
                 </div>
               </div>
-              <p className="text-sm text-green-700 mt-3">Proceeding to configuration step...</p>
+              <div className="mt-4">
+                <button
+                  onClick={() => setCurrentStep('configure')}
+                  className="btn-primary w-full"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
