@@ -92,11 +92,11 @@ function StrategyConfig() {
       setAnalysisResults(analysisResults);
 
       // Calculate rolling analysis
-      const sufficiency = checkRollingDataSufficiency(aligned);
+      const sufficiency = checkRollingDataSufficiency(filteredData);
 
       if (sufficiency.isSufficient) {
         const rolling = calculateRollingAlphaBeta(
-          aligned,
+          filteredData,
           selectedStock,
           selectedIndex,
           parseFloat(riskFreeRate)
