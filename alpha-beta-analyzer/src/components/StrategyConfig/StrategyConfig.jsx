@@ -28,8 +28,8 @@ function StrategyConfig() {
   const handleContinue = (e) => {
     e.preventDefault();
 
-    if (!selectedStock || !selectedIndex) {
-      alert('Please select both a stock and a market index.');
+    if (!selectedIndex) {
+      alert('Please select a market index.');
       return;
     }
 
@@ -43,16 +43,20 @@ function StrategyConfig() {
   };
 
   const calculateAnalysis = () => {
-    if (!parsedData || !selectedStock || !selectedIndex) return;
+    if (!parsedData || !selectedIndex) return;
 
     try {
-      // Calculate weekly returns
+      // Prepare columns for calculation: all stocks + index
+      const columnsToCalculate = {};
+      stockColumns.forEach(stock => {
+        columnsToCalculate[stock] = parsedData.columns[stock];
+      });
+      columnsToCalculate[selectedIndex] = parsedData.columns[selectedIndex];
+
+      // Calculate weekly returns for all stocks and index
       const returns = calculateMultipleWeeklyReturns(
         parsedData.dates,
-        {
-          [selectedStock]: parsedData.columns[selectedStock],
-          [selectedIndex]: parsedData.columns[selectedIndex],
-        },
+        columnsToCalculate,
         false
       );
 
@@ -70,8 +74,14 @@ function StrategyConfig() {
         return;
       }
 
-      // Extract returns
-      const stockReturns = filteredData.map(week => week[selectedStock].return);
+      // Set the first stock as selected if no stock is selected
+      const stockToAnalyze = selectedStock || stockColumns[0];
+      if (!selectedStock && stockColumns.length > 0) {
+        setSelectedStock(stockColumns[0]);
+      }
+
+      // Extract returns for the first stock
+      const stockReturns = filteredData.map(week => week[stockToAnalyze].return);
       const marketReturns = filteredData.map(week => week[selectedIndex].return);
 
       // Perform analysis
@@ -85,7 +95,7 @@ function StrategyConfig() {
         ...results,
         weeklyData: filteredData,
         period,
-        stockName: selectedStock,
+        stockName: stockToAnalyze,
         indexName: selectedIndex,
       };
 
@@ -107,7 +117,7 @@ function StrategyConfig() {
         // Calculate rolling using full aligned dataset
         const rolling = calculateRollingAlphaBeta(
           aligned,
-          selectedStock,
+          stockToAnalyze,
           selectedIndex,
           parseFloat(riskFreeRate)
         );
@@ -121,7 +131,7 @@ function StrategyConfig() {
         setRollingResults({
           insufficient: false,
           data: filteredRolling,
-          stockName: selectedStock,
+          stockName: stockToAnalyze,
           indexName: selectedIndex,
         });
       } else {
@@ -145,25 +155,8 @@ function StrategyConfig() {
       <p className="text-gray-600 mb-6">Select and configure strategies</p>
 
       <div className="space-y-6">
-        {/* First Row: Stock Selection and Market Index Selection */}
+        {/* Configuration Row: Market Index and Risk-Free Rate */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Stock Selection */}
-          <div>
-            <label className="label">Select Stock</label>
-            <select
-              className="input-field"
-              value={selectedStock}
-              onChange={(e) => setSelectedStock(e.target.value)}
-            >
-              <option value="">-- Select Stock --</option>
-              {stockColumns.map((stock) => (
-                <option key={stock} value={stock}>
-                  {stock}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Market Index Selection */}
           <div>
             <label className="label">Select Market Index</label>
@@ -180,13 +173,10 @@ function StrategyConfig() {
               ))}
             </select>
           </div>
-        </div>
 
-        {/* Second Row: Risk-Free Rate and Analysis Period */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Risk-Free Rate */}
           <div>
-            <label className="label">Risk-Free Rate (%)</label>
+            <label className="label">Annualized Risk-Free Rate (%)</label>
             <input
               type="number"
               className="input-field"
@@ -196,36 +186,7 @@ function StrategyConfig() {
               max="20"
               step="0.1"
             />
-            <p className="text-xs text-gray-500 mt-1">Annualized risk-free rate (typically 3-6% for government bonds)</p>
-          </div>
-
-          {/* Analysis Period */}
-          <div>
-            <label className="label">Analysis Period</label>
-            <div className="flex gap-4 mt-2">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="period"
-                  value={CALCULATION_PERIODS.THREE_YEARS}
-                  checked={period === CALCULATION_PERIODS.THREE_YEARS}
-                  onChange={(e) => setPeriod(parseInt(e.target.value))}
-                  className="mr-2"
-                />
-                <span>3 Years</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="period"
-                  value={CALCULATION_PERIODS.FIVE_YEARS}
-                  checked={period === CALCULATION_PERIODS.FIVE_YEARS}
-                  onChange={(e) => setPeriod(parseInt(e.target.value))}
-                  className="mr-2"
-                />
-                <span>5 Years</span>
-              </label>
-            </div>
+            <p className="text-xs text-gray-500 mt-1">Annual risk-free rate (typically 3-6% for government bonds)</p>
           </div>
         </div>
 
@@ -242,9 +203,9 @@ function StrategyConfig() {
             type="button"
             onClick={handleContinue}
             className="btn-primary flex-1"
-            disabled={!selectedStock || !selectedIndex}
+            disabled={!selectedIndex}
           >
-            Continue to Results
+            Calculate Weekly Returns
           </button>
         </div>
       </div>

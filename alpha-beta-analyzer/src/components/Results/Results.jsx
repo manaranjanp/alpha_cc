@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
+import { performAlphaBetaAnalysis } from '../../utils/regressionEngine';
+import { calculateRollingAlphaBeta } from '../../utils/rollingCalculations';
+import { filterByPeriod } from '../../utils/returnCalculations';
+import { ROLLING_WINDOW_WEEKS } from '../../constants/config';
 
 function Results() {
   const [activeTab, setActiveTab] = useState('static');
@@ -7,7 +11,87 @@ function Results() {
   const rollingResults = useStore(state => state.rollingResults);
   const selectedStock = useStore(state => state.selectedStock);
   const selectedIndex = useStore(state => state.selectedIndex);
+  const stockColumns = useStore(state => state.stockColumns);
+  const alignedData = useStore(state => state.alignedData);
+  const period = useStore(state => state.period);
+  const riskFreeRate = useStore(state => state.riskFreeRate);
   const setCurrentStep = useStore(state => state.setCurrentStep);
+  const setSelectedStock = useStore(state => state.setSelectedStock);
+  const setAnalysisResults = useStore(state => state.setAnalysisResults);
+  const setRollingResults = useStore(state => state.setRollingResults);
+
+  // Recalculate analysis when stock selection changes
+  useEffect(() => {
+    if (!alignedData || !selectedStock || !selectedIndex) return;
+
+    try {
+      // Filter data by period
+      const filteredData = filterByPeriod(alignedData, period);
+
+      if (filteredData.length < 2) {
+        return;
+      }
+
+      // Extract returns for the selected stock
+      const stockReturns = filteredData.map(week => week[selectedStock].return);
+      const marketReturns = filteredData.map(week => week[selectedIndex].return);
+
+      // Perform analysis
+      const results = performAlphaBetaAnalysis(
+        stockReturns,
+        marketReturns,
+        parseFloat(riskFreeRate)
+      );
+
+      const analysisResults = {
+        ...results,
+        weeklyData: filteredData,
+        period,
+        stockName: selectedStock,
+        indexName: selectedIndex,
+      };
+
+      setAnalysisResults(analysisResults);
+
+      // Calculate rolling analysis
+      const rollingMinRequired = period + ROLLING_WINDOW_WEEKS;
+      const sufficiency = {
+        isSufficient: alignedData.length >= rollingMinRequired,
+        required: rollingMinRequired,
+        available: alignedData.length,
+        message: alignedData.length < rollingMinRequired
+          ? `Insufficient data for rolling analysis in the selected period. Need ${rollingMinRequired} weeks (${period} weeks for selected period + ${ROLLING_WINDOW_WEEKS} weeks for lookback), have ${alignedData.length} weeks.`
+          : `Sufficient data available for rolling analysis.`,
+      };
+
+      if (sufficiency.isSufficient) {
+        // Calculate rolling using full aligned dataset
+        const rolling = calculateRollingAlphaBeta(
+          alignedData,
+          selectedStock,
+          selectedIndex,
+          parseFloat(riskFreeRate)
+        );
+
+        // Filter rolling results to only include those within the selected period
+        const periodStartDate = filteredData.length > 0 ? filteredData[0].weekEndDate : null;
+        const filteredRolling = periodStartDate
+          ? rolling.filter(r => new Date(r.date) >= new Date(periodStartDate))
+          : rolling;
+
+        setRollingResults({
+          insufficient: false,
+          data: filteredRolling,
+          stockName: selectedStock,
+          indexName: selectedIndex,
+        });
+      } else {
+        setRollingResults({ insufficient: true, message: sufficiency.message });
+      }
+    } catch (error) {
+      console.error('Error recalculating analysis:', error);
+    }
+  }, [selectedStock, alignedData, selectedIndex, period, riskFreeRate, setAnalysisResults, setRollingResults]);
 
   if (!analysisResults) {
     return (
@@ -21,6 +105,25 @@ function Results() {
 
   return (
     <div className="space-y-6">
+      {/* Stock Selection */}
+      <div className="card">
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Select Stock to Analyze</h3>
+        <select
+          className="input-field"
+          value={selectedStock}
+          onChange={(e) => setSelectedStock(e.target.value)}
+        >
+          {stockColumns.map((stock) => (
+            <option key={stock} value={stock}>
+              {stock}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-gray-500 mt-2">
+          Change the stock to view different analysis results. All calculations use weekly returns from first to last trading day of each week.
+        </p>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="card">
