@@ -7,42 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Anthropic-inspired palette
-        'dark-slate': '#131314',
-        'charcoal': '#1a1b1c',
-        'cream': 'rgb(250, 249, 240)',
-        'cream-dark': 'rgb(240, 239, 230)',
-
-        // Accent colors
-        'accent-orange': {
-          DEFAULT: '#d97757',
-          light: '#e89579',
-          dark: '#c7653f',
+        primary: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
         },
-
-        // Secondary colors
-        'slate': {
-          light: '#64748b',
-          medium: '#475569',
-        },
-        'cloud': {
-          light: '#f1f5f9',
-        },
-
-        // Status colors
-        primary: '#d97757',
-        success: '#10b981',
-        warning: '#f59e0b',
-        danger: '#ef4444',
-      },
-      fontFamily: {
-        heading: ['Inter', 'system-ui', 'sans-serif'],
-        body: ['Source Serif 4', 'Georgia', 'serif'],
-      },
-      animation: {
-        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-        'slide-in-right': 'slideInRight 0.8s ease-out forwards',
-        'shimmer': 'shimmer 2s infinite',
       },
     },
   },
