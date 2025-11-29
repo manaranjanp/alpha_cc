@@ -26,7 +26,7 @@
     "simple-statistics": "^7.8.8",
     "tailwindcss": "^4.1.17",
     "vite-plugin-singlefile": "^2.3.0",
-    "xlsx": "^0.18.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
