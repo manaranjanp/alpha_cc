@@ -33,6 +33,11 @@ function StrategyConfig() {
       return;
     }
 
+    if (!parsedData) {
+      alert('No data available. Please upload a file first.');
+      return;
+    }
+
     // Perform calculations
     calculateAnalysis();
   };
@@ -60,55 +65,58 @@ function StrategyConfig() {
       // Filter data by period
       const filteredData = filterByPeriod(aligned, period);
 
-      if (filteredData.length >= 2) {
-        // Extract returns
-        const stockReturns = filteredData.map(week => week[selectedStock].return);
-        const marketReturns = filteredData.map(week => week[selectedIndex].return);
+      if (filteredData.length < 2) {
+        alert('Insufficient data for the selected period. Please select a different period or upload more historical data.');
+        return;
+      }
 
-        // Perform analysis
-        const results = performAlphaBetaAnalysis(
-          stockReturns,
-          marketReturns,
+      // Extract returns
+      const stockReturns = filteredData.map(week => week[selectedStock].return);
+      const marketReturns = filteredData.map(week => week[selectedIndex].return);
+
+      // Perform analysis
+      const results = performAlphaBetaAnalysis(
+        stockReturns,
+        marketReturns,
+        parseFloat(riskFreeRate)
+      );
+
+      const analysisResults = {
+        ...results,
+        weeklyData: filteredData,
+        period,
+        stockName: selectedStock,
+        indexName: selectedIndex,
+      };
+
+      setAnalysisResults(analysisResults);
+
+      // Calculate rolling analysis
+      const sufficiency = checkRollingDataSufficiency(aligned);
+
+      if (sufficiency.isSufficient) {
+        const rolling = calculateRollingAlphaBeta(
+          aligned,
+          selectedStock,
+          selectedIndex,
           parseFloat(riskFreeRate)
         );
 
-        const analysisResults = {
-          ...results,
-          weeklyData: filteredData,
-          period,
+        setRollingResults({
+          insufficient: false,
+          data: rolling,
           stockName: selectedStock,
           indexName: selectedIndex,
-        };
-
-        setAnalysisResults(analysisResults);
-
-        // Calculate rolling analysis
-        const sufficiency = checkRollingDataSufficiency(aligned);
-
-        if (sufficiency.isSufficient) {
-          const rolling = calculateRollingAlphaBeta(
-            aligned,
-            selectedStock,
-            selectedIndex,
-            parseFloat(riskFreeRate)
-          );
-
-          setRollingResults({
-            insufficient: false,
-            data: rolling,
-            stockName: selectedStock,
-            indexName: selectedIndex,
-          });
-        } else {
-          setRollingResults({ insufficient: true, message: sufficiency.message });
-        }
-
-        // Set simulation results (for stepper logic)
-        setSimulationResults([analysisResults]);
-
-        // Move to results step
-        setCurrentStep('results');
+        });
+      } else {
+        setRollingResults({ insufficient: true, message: sufficiency.message });
       }
+
+      // Set simulation results (for stepper logic)
+      setSimulationResults([analysisResults]);
+
+      // Move to results step
+      setCurrentStep('results');
     } catch (error) {
       console.error('Error calculating analysis:', error);
       alert('Error calculating analysis: ' + error.message);
