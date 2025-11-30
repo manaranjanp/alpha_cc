@@ -152,10 +152,30 @@ const structureData = (rawData, columnInfo) => {
     const dateStr = row[dateColumn];
     if (!dateStr) return; // Skip rows with no date
 
-    // Parse date
+    // Parse date - try multiple formats
     try {
-      const date = parseDate(dateStr, DATE_FORMAT, new Date());
-      if (isNaN(date.getTime())) {
+      let date = null;
+      const dateFormats = [
+        'MM-dd-yyyy',  // e.g., 01-13-2015
+        'yyyy-MM-dd',  // e.g., 2015-01-01
+        'M/d/yyyy',    // e.g., 1/13/2015
+        'yyyy/MM/dd',  // e.g., 2015/01/13
+      ];
+
+      // Try each format until one succeeds
+      for (const format of dateFormats) {
+        try {
+          date = parseDate(dateStr, format, new Date());
+          if (!isNaN(date.getTime())) {
+            break; // Successfully parsed
+          }
+        } catch (e) {
+          // Try next format
+          continue;
+        }
+      }
+
+      if (!date || isNaN(date.getTime())) {
         // Invalid date, skip this row
         return;
       }
