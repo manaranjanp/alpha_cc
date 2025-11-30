@@ -86,7 +86,7 @@ export const exportToCSV = (data, filename, headers = null) => {
  */
 export const exportWeeklyReturnsCSV = (weeklyReturnsData, stockName, indexName) => {
   const data = weeklyReturnsData.map(week => ({
-    'Week Ending Date': format(week.weekEndDate, 'MM-dd-yyyy'),
+    'Week Ending Date': format(week.weekEndDate, 'dd/MM/yyyy'),
     [`${stockName} Price`]: week[stockName]?.price?.toFixed(2) || '',
     [`${stockName} Return (%)`]: week[stockName]?.return?.toFixed(2) || '',
     [`${indexName} Value`]: week[indexName]?.price?.toFixed(2) || '',
@@ -108,8 +108,8 @@ export const exportRollingAnalysisCSV = (rollingData, stockName = null) => {
     'Alpha (%)': item.alpha.toFixed(4),
     'Beta': item.beta.toFixed(4),
     'R-Squared': item.rSquared.toFixed(4),
-    'Period Start': format(item.dataPeriodStart, 'MM-dd-yyyy'),
-    'Period End': format(item.dataPeriodEnd, 'MM-dd-yyyy'),
+    'Period Start': format(item.dataPeriodStart, 'dd/MM/yyyy'),
+    'Period End': format(item.dataPeriodEnd, 'dd/MM/yyyy'),
   }));
 
   const filename = stockName

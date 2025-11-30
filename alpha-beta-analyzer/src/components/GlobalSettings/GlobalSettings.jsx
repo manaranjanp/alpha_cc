@@ -114,7 +114,7 @@ const GlobalSettings = ({
       </div>
 
       <div className="mt-3 font-body text-xs text-slate-light">
-        <p>Date format: mm-dd-yyyy | Weekly returns are used for all calculations</p>
+        <p>Date format: dd/mm/yyyy | Weekly returns are used for all calculations</p>
       </div>
     </div>
   );

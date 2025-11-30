@@ -4,7 +4,7 @@ export const ROLLING_WINDOW_WEEKS = 156; // 3 years
 export const ROLLING_INTERVAL_WEEKS = 13; // 3 months (quarterly)
 export const MAX_STOCKS_COMPARISON = 5;
 export const DEFAULT_RISK_FREE_RATE = 5; // 5%
-export const DATE_FORMAT = 'MM-dd-yyyy';
+export const DATE_FORMAT = 'dd/MM/yyyy';
 export const WEEKS_PER_YEAR = 52;
 
 // Calculation periods in weeks
@@ -35,7 +35,7 @@ export const VALIDATION_RULES = {
 export const ERROR_MESSAGES = {
   INVALID_FILE_TYPE: 'Please upload a CSV or XLSX file.',
   FILE_TOO_LARGE: 'File size exceeds 10MB limit.',
-  INVALID_DATE_FORMAT: 'Date format must be mm-dd-yyyy.',
+  INVALID_DATE_FORMAT: 'Date format must be dd/mm/yyyy.',
   MISSING_COLUMNS: 'Required columns missing: Date, Stock Prices, and Market Index.',
   INSUFFICIENT_DATA: 'Minimum 3 years of data required for analysis.',
   INVALID_PRICE_DATA: 'Invalid price data detected (zero, negative, or non-numeric values).',

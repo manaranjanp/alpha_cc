@@ -156,6 +156,9 @@ const structureData = (rawData, columnInfo) => {
     try {
       let date = null;
       const dateFormats = [
+        'dd/MM/yyyy',  // e.g., 13/01/2015 (PRIMARY FORMAT)
+        'd/M/yyyy',    // e.g., 1/1/2015
+        'dd-MM-yyyy',  // e.g., 13-01-2015
         'MM-dd-yyyy',  // e.g., 01-13-2015
         'yyyy-MM-dd',  // e.g., 2015-01-01
         'M/d/yyyy',    // e.g., 1/13/2015
