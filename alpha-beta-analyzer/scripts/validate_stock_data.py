@@ -3,18 +3,15 @@
 Stock Data Validator and Cleaner
 
 Validates and cleans stock price data files by:
-1. Standardizing date formats to dd/mm/yyyy (handles multiple input formats)
+1. Standardizing date formats to dd/mm/yyyy (handles yyyy-mm-dd and mm-dd-yyyy input formats)
 2. Validating all dates can be parsed correctly
-3. Imputing missing values using forward fill or backfill for 1-2 consecutive missing values
-4. Creating a cleaned output file
+3. Checking that dates are in timeseries sequence
+4. Imputing missing values using forward fill or backfill for 1-2 consecutive missing values
+5. Creating a cleaned output file
 
 Supported date input formats:
-  - MM-dd-yyyy (e.g., 01-13-2015)
-  - yyyy-MM-dd (e.g., 2015-01-13)
-  - MM/dd/yyyy (e.g., 01/13/2015)
-  - yyyy/MM/dd (e.g., 2015/01/13)
-  - dd-MM-yyyy (e.g., 13-01-2015)
-  - dd/MM/yyyy (e.g., 13/01/2015)
+  - yyyy-mm-dd (e.g., 2015-01-13)
+  - mm-dd-yyyy (e.g., 01-13-2015)
 
 Usage:
     python validate_stock_data.py input_file.csv -output cleaned_file.csv
@@ -30,7 +27,7 @@ import os
 
 def parse_date_with_multiple_formats(date_str):
     """
-    Parse date string trying multiple common formats.
+    Parse date string trying yyyy-mm-dd and mm-dd-yyyy formats only.
 
     Args:
         date_str: Date string to parse
@@ -39,12 +36,8 @@ def parse_date_with_multiple_formats(date_str):
         datetime object or None if parsing fails
     """
     date_formats = [
-        '%m-%d-%Y',    # MM-dd-yyyy (e.g., 01-13-2015)
-        '%Y-%m-%d',    # yyyy-MM-dd (e.g., 2015-01-13)
-        '%m/%d/%Y',    # MM/dd/yyyy (e.g., 01/13/2015)
-        '%Y/%m/%d',    # yyyy/MM/dd (e.g., 2015/01/13)
-        '%d-%m-%Y',    # dd-MM-yyyy (e.g., 13-01-2015)
-        '%d/%m/%Y',    # dd/MM/yyyy (e.g., 13/01/2015)
+        '%Y-%m-%d',    # yyyy-mm-dd (e.g., 2015-01-13)
+        '%m-%d-%Y',    # mm-dd-yyyy (e.g., 01-13-2015)
     ]
 
     for fmt in date_formats:
@@ -58,7 +51,7 @@ def parse_date_with_multiple_formats(date_str):
 
 def validate_date_format(date_str):
     """
-    Validate if date string can be parsed.
+    Validate if date string is in dd/mm/yyyy format.
 
     Args:
         date_str: Date string to validate
@@ -66,11 +59,11 @@ def validate_date_format(date_str):
     Returns:
         tuple: (is_valid, error_message)
     """
-    parsed_date = parse_date_with_multiple_formats(date_str)
-    if parsed_date:
+    try:
+        datetime.strptime(str(date_str), '%d/%m/%Y')
         return True, None
-    else:
-        return False, f"Invalid date format: '{date_str}' (could not parse)"
+    except ValueError:
+        return False, f"Invalid date format: '{date_str}' (expected dd/mm/yyyy)"
 
 
 def standardize_dates(df):
@@ -134,6 +127,51 @@ def check_date_column(df):
             errors.append(f"Row {idx + 2}: {error_msg}")  # +2 for header and 0-indexing
 
     return len(errors) == 0, errors
+
+
+def check_timeseries_sequence(df):
+    """
+    Check if dates are in chronological timeseries sequence.
+    Expects dates in dd/mm/yyyy format.
+
+    Args:
+        df: DataFrame with Date column in dd/mm/yyyy format
+
+    Returns:
+        tuple: (is_sequential, sequence_report)
+    """
+    report = {
+        'is_sequential': True,
+        'total_dates': len(df),
+        'out_of_order': []
+    }
+
+    # Parse all dates (expecting dd/mm/yyyy format after standardization)
+    dates = []
+    for idx, date_str in enumerate(df['Date']):
+        try:
+            parsed = datetime.strptime(str(date_str), '%d/%m/%Y')
+            dates.append((idx, parsed))
+        except ValueError:
+            report['is_sequential'] = False
+            report['out_of_order'].append({
+                'row': idx + 2,
+                'reason': f'Cannot parse date: {date_str}'
+            })
+
+    # Check if dates are in ascending order
+    for i in range(len(dates) - 1):
+        curr_idx, curr_date = dates[i]
+        next_idx, next_date = dates[i + 1]
+
+        if curr_date > next_date:
+            report['is_sequential'] = False
+            report['out_of_order'].append({
+                'row': next_idx + 2,
+                'reason': f'Date {next_date.strftime("%d/%m/%Y")} comes before previous date {curr_date.strftime("%d/%m/%Y")}'
+            })
+
+    return report['is_sequential'], report
 
 
 def count_consecutive_missing(series, index):
@@ -242,7 +280,7 @@ def impute_missing_values(df, max_consecutive=2):
     return df_clean, report
 
 
-def print_report(date_conversion_report, date_errors, imputation_report, original_df, cleaned_df):
+def print_report(date_conversion_report, date_errors, timeseries_report, imputation_report, original_df, cleaned_df):
     """Print validation and cleaning report."""
     print("\n" + "="*70)
     print("STOCK DATA VALIDATION AND CLEANING REPORT")
@@ -276,8 +314,21 @@ def print_report(date_conversion_report, date_errors, imputation_report, origina
         if len(date_errors) > 10:
             print(f"  ... and {len(date_errors) - 10} more errors")
 
+    # Timeseries sequence validation
+    print("\n3. TIMESERIES SEQUENCE VALIDATION")
+    print("-" * 70)
+    if timeseries_report:
+        if timeseries_report['is_sequential']:
+            print(f"✓ All {timeseries_report['total_dates']} dates are in chronological order")
+        else:
+            print(f"✗ Found {len(timeseries_report['out_of_order'])} sequence issue(s):")
+            for issue in timeseries_report['out_of_order'][:10]:
+                print(f"  - Row {issue['row']}: {issue['reason']}")
+            if len(timeseries_report['out_of_order']) > 10:
+                print(f"  ... and {len(timeseries_report['out_of_order']) - 10} more issues")
+
     # Missing values analysis
-    print("\n3. MISSING VALUES ANALYSIS")
+    print("\n4. MISSING VALUES ANALYSIS")
     print("-" * 70)
 
     columns_to_check = [col for col in original_df.columns if col != 'Date']
@@ -305,7 +356,7 @@ def print_report(date_conversion_report, date_errors, imputation_report, origina
 
     # Imputation details
     if imputation_report['imputed']:
-        print("\n4. IMPUTATION DETAILS")
+        print("\n5. IMPUTATION DETAILS")
         print("-" * 70)
         print("Values imputed using forward fill / backfill:")
         for col, positions in imputation_report['imputed'].items():
@@ -315,7 +366,7 @@ def print_report(date_conversion_report, date_errors, imputation_report, origina
 
     # Non-imputed gaps
     if imputation_report['not_imputed']:
-        print("\n5. GAPS NOT IMPUTED (>2 consecutive missing values)")
+        print("\n6. GAPS NOT IMPUTED (>2 consecutive missing values)")
         print("-" * 70)
         print("⚠ The following gaps were NOT imputed (manual review recommended):")
         for col, positions in imputation_report['not_imputed'].items():
@@ -407,7 +458,7 @@ What this script does:
 
         print(f"✓ Loaded {len(df)} rows and {len(df.columns)} columns")
 
-        # Standardize date formats to MM-dd-yyyy
+        # Standardize date formats to dd/mm/yyyy
         print("Standardizing date formats...")
         df_standardized, date_conversion_report = standardize_dates(df)
 
@@ -416,11 +467,15 @@ What this script does:
         if not args.skip_date_validation:
             all_valid, date_errors = check_date_column(df_standardized)
 
+        # Check timeseries sequence
+        print("Checking timeseries sequence...")
+        is_sequential, timeseries_report = check_timeseries_sequence(df_standardized)
+
         # Impute missing values
         df_clean, imputation_report = impute_missing_values(df_standardized, args.max_consecutive)
 
         # Print report
-        print_report(date_conversion_report, date_errors, imputation_report, df, df_clean)
+        print_report(date_conversion_report, date_errors, timeseries_report, imputation_report, df, df_clean)
 
         # Save cleaned data
         df_clean.to_csv(output_file, index=False)
@@ -429,10 +484,12 @@ What this script does:
         print(f"✓ Output contains {len(df_clean)} rows")
 
         # Exit with error code if there are issues
-        if date_errors or imputation_report['not_imputed']:
+        if date_errors or not is_sequential or imputation_report['not_imputed']:
             print("\n⚠  Warning: Some issues were found. Please review the report above.")
             if date_errors:
                 print("   - Date format errors need to be corrected")
+            if not is_sequential:
+                print("   - Dates are not in chronological timeseries order")
             if imputation_report['not_imputed']:
                 print("   - Large gaps in data need manual review")
             sys.exit(0)  # Still exit successfully as we created the cleaned file
