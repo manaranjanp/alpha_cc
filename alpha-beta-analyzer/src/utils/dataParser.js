@@ -156,19 +156,22 @@ const structureData = (rawData, columnInfo) => {
     try {
       let date = null;
       const dateFormats = [
-        'dd/MM/yyyy',  // e.g., 13/01/2015 (PRIMARY FORMAT)
-        'd/M/yyyy',    // e.g., 1/1/2015
+        'dd/MM/yyyy',  // e.g., 13/01/2015 (PRIMARY FORMAT - European)
+        'd/M/yyyy',    // e.g., 1/1/2015 (flexible European)
         'dd-MM-yyyy',  // e.g., 13-01-2015
-        'MM-dd-yyyy',  // e.g., 01-13-2015
-        'yyyy-MM-dd',  // e.g., 2015-01-01
-        'M/d/yyyy',    // e.g., 1/13/2015
+        'd-M-yyyy',    // e.g., 1-1-2015
+        'yyyy-MM-dd',  // e.g., 2015-01-01 (ISO format)
         'yyyy/MM/dd',  // e.g., 2015/01/13
+        // Removed American formats (M/d/yyyy, MM-dd-yyyy) that caused ambiguous parsing
       ];
+
+      // Trim whitespace from date string
+      const trimmedDateStr = dateStr.toString().trim();
 
       // Try each format until one succeeds
       for (const format of dateFormats) {
         try {
-          date = parseDate(dateStr, format, new Date());
+          date = parseDate(trimmedDateStr, format, new Date());
           if (!isNaN(date.getTime())) {
             break; // Successfully parsed
           }
