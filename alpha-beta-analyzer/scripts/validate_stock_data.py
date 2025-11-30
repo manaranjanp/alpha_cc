@@ -3,9 +3,18 @@
 Stock Data Validator and Cleaner
 
 Validates and cleans stock price data files by:
-1. Checking date format (mm-dd-yyyy)
-2. Imputing missing values using forward fill or backfill for 1-2 consecutive missing values
-3. Creating a cleaned output file
+1. Standardizing date formats to MM-dd-yyyy (handles multiple input formats)
+2. Validating all dates can be parsed correctly
+3. Imputing missing values using forward fill or backfill for 1-2 consecutive missing values
+4. Creating a cleaned output file
+
+Supported date input formats:
+  - MM-dd-yyyy (e.g., 01-13-2015)
+  - yyyy-MM-dd (e.g., 2015-01-13)
+  - MM/dd/yyyy (e.g., 01/13/2015)
+  - yyyy/MM/dd (e.g., 2015/01/13)
+  - dd-MM-yyyy (e.g., 13-01-2015)
+  - dd/MM/yyyy (e.g., 13/01/2015)
 
 Usage:
     python validate_stock_data.py input_file.csv -output cleaned_file.csv
@@ -19,9 +28,37 @@ import pandas as pd
 import os
 
 
+def parse_date_with_multiple_formats(date_str):
+    """
+    Parse date string trying multiple common formats.
+
+    Args:
+        date_str: Date string to parse
+
+    Returns:
+        datetime object or None if parsing fails
+    """
+    date_formats = [
+        '%m-%d-%Y',    # MM-dd-yyyy (e.g., 01-13-2015)
+        '%Y-%m-%d',    # yyyy-MM-dd (e.g., 2015-01-13)
+        '%m/%d/%Y',    # MM/dd/yyyy (e.g., 01/13/2015)
+        '%Y/%m/%d',    # yyyy/MM/dd (e.g., 2015/01/13)
+        '%d-%m-%Y',    # dd-MM-yyyy (e.g., 13-01-2015)
+        '%d/%m/%Y',    # dd/MM/yyyy (e.g., 13/01/2015)
+    ]
+
+    for fmt in date_formats:
+        try:
+            return datetime.strptime(str(date_str), fmt)
+        except ValueError:
+            continue
+
+    return None
+
+
 def validate_date_format(date_str):
     """
-    Validate if date string is in mm-dd-yyyy format.
+    Validate if date string can be parsed.
 
     Args:
         date_str: Date string to validate
@@ -29,11 +66,55 @@ def validate_date_format(date_str):
     Returns:
         tuple: (is_valid, error_message)
     """
-    try:
-        datetime.strptime(date_str, '%m-%d-%Y')
+    parsed_date = parse_date_with_multiple_formats(date_str)
+    if parsed_date:
         return True, None
-    except ValueError:
-        return False, f"Invalid date format: '{date_str}' (expected mm-dd-yyyy)"
+    else:
+        return False, f"Invalid date format: '{date_str}' (could not parse)"
+
+
+def standardize_dates(df):
+    """
+    Standardize all dates in the Date column to MM-dd-yyyy format.
+
+    Args:
+        df: DataFrame with Date column
+
+    Returns:
+        tuple: (standardized_df, conversion_report)
+    """
+    df_std = df.copy()
+    conversion_report = {
+        'converted': 0,
+        'already_standard': 0,
+        'errors': []
+    }
+
+    standardized_dates = []
+    for idx, date_val in enumerate(df['Date']):
+        date_str = str(date_val)
+        parsed_date = parse_date_with_multiple_formats(date_str)
+
+        if parsed_date:
+            # Convert to MM-dd-yyyy format
+            standardized = parsed_date.strftime('%m-%d-%Y')
+            standardized_dates.append(standardized)
+
+            # Check if it was already in the standard format
+            if date_str == standardized:
+                conversion_report['already_standard'] += 1
+            else:
+                conversion_report['converted'] += 1
+        else:
+            # Keep original if parsing fails
+            standardized_dates.append(date_str)
+            conversion_report['errors'].append({
+                'row': idx + 2,
+                'value': date_str
+            })
+
+    df_std['Date'] = standardized_dates
+    return df_std, conversion_report
 
 
 def check_date_column(df):
@@ -161,14 +242,30 @@ def impute_missing_values(df, max_consecutive=2):
     return df_clean, report
 
 
-def print_report(date_errors, imputation_report, original_df, cleaned_df):
+def print_report(date_conversion_report, date_errors, imputation_report, original_df, cleaned_df):
     """Print validation and cleaning report."""
     print("\n" + "="*70)
     print("STOCK DATA VALIDATION AND CLEANING REPORT")
     print("="*70)
 
+    # Date standardization
+    print("\n1. DATE FORMAT STANDARDIZATION")
+    print("-" * 70)
+    if date_conversion_report:
+        total = date_conversion_report['converted'] + date_conversion_report['already_standard']
+        print(f"✓ Processed {total} dates:")
+        print(f"  - {date_conversion_report['already_standard']} already in MM-dd-yyyy format")
+        print(f"  - {date_conversion_report['converted']} converted to MM-dd-yyyy format")
+
+        if date_conversion_report['errors']:
+            print(f"\n✗ Failed to parse {len(date_conversion_report['errors'])} date(s):")
+            for error in date_conversion_report['errors'][:10]:
+                print(f"  - Row {error['row']}: {error['value']}")
+            if len(date_conversion_report['errors']) > 10:
+                print(f"  ... and {len(date_conversion_report['errors']) - 10} more errors")
+
     # Date validation
-    print("\n1. DATE FORMAT VALIDATION (mm-dd-yyyy)")
+    print("\n2. DATE FORMAT VALIDATION (mm-dd-yyyy)")
     print("-" * 70)
     if not date_errors:
         print("✓ All dates are in correct format")
@@ -180,7 +277,7 @@ def print_report(date_errors, imputation_report, original_df, cleaned_df):
             print(f"  ... and {len(date_errors) - 10} more errors")
 
     # Missing values analysis
-    print("\n2. MISSING VALUES ANALYSIS")
+    print("\n3. MISSING VALUES ANALYSIS")
     print("-" * 70)
 
     columns_to_check = [col for col in original_df.columns if col != 'Date']
@@ -208,7 +305,7 @@ def print_report(date_errors, imputation_report, original_df, cleaned_df):
 
     # Imputation details
     if imputation_report['imputed']:
-        print("\n3. IMPUTATION DETAILS")
+        print("\n4. IMPUTATION DETAILS")
         print("-" * 70)
         print("Values imputed using forward fill / backfill:")
         for col, positions in imputation_report['imputed'].items():
@@ -218,7 +315,7 @@ def print_report(date_errors, imputation_report, original_df, cleaned_df):
 
     # Non-imputed gaps
     if imputation_report['not_imputed']:
-        print("\n4. GAPS NOT IMPUTED (>2 consecutive missing values)")
+        print("\n5. GAPS NOT IMPUTED (>2 consecutive missing values)")
         print("-" * 70)
         print("⚠ The following gaps were NOT imputed (manual review recommended):")
         for col, positions in imputation_report['not_imputed'].items():
@@ -246,11 +343,12 @@ Examples:
   python validate_stock_data.py data.csv -max-consecutive 3
 
 What this script does:
-  1. Validates all dates are in mm-dd-yyyy format
-  2. Identifies missing values in stock price columns
-  3. Imputes 1-2 consecutive missing values using forward/backfill
-  4. Reports larger gaps that need manual review
-  5. Creates a cleaned output file
+  1. Standardizes all dates to MM-dd-yyyy format (auto-detects input format)
+  2. Validates all dates can be parsed correctly
+  3. Identifies missing values in stock price columns
+  4. Imputes 1-2 consecutive missing values using forward/backfill
+  5. Reports larger gaps that need manual review
+  6. Creates a cleaned output file
         """
     )
 
@@ -309,16 +407,20 @@ What this script does:
 
         print(f"✓ Loaded {len(df)} rows and {len(df.columns)} columns")
 
-        # Validate date formats
+        # Standardize date formats to MM-dd-yyyy
+        print("Standardizing date formats...")
+        df_standardized, date_conversion_report = standardize_dates(df)
+
+        # Validate date formats after standardization
         date_errors = []
         if not args.skip_date_validation:
-            all_valid, date_errors = check_date_column(df)
+            all_valid, date_errors = check_date_column(df_standardized)
 
         # Impute missing values
-        df_clean, imputation_report = impute_missing_values(df, args.max_consecutive)
+        df_clean, imputation_report = impute_missing_values(df_standardized, args.max_consecutive)
 
         # Print report
-        print_report(date_errors, imputation_report, df, df_clean)
+        print_report(date_conversion_report, date_errors, imputation_report, df, df_clean)
 
         # Save cleaned data
         df_clean.to_csv(output_file, index=False)
