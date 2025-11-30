@@ -3,7 +3,7 @@
 Stock Data Validator and Cleaner
 
 Validates and cleans stock price data files by:
-1. Standardizing date formats to MM-dd-yyyy (handles multiple input formats)
+1. Standardizing date formats to dd/mm/yyyy (handles multiple input formats)
 2. Validating all dates can be parsed correctly
 3. Imputing missing values using forward fill or backfill for 1-2 consecutive missing values
 4. Creating a cleaned output file
@@ -75,7 +75,7 @@ def validate_date_format(date_str):
 
 def standardize_dates(df):
     """
-    Standardize all dates in the Date column to MM-dd-yyyy format.
+    Standardize all dates in the Date column to dd/mm/yyyy format.
 
     Args:
         df: DataFrame with Date column
@@ -96,8 +96,8 @@ def standardize_dates(df):
         parsed_date = parse_date_with_multiple_formats(date_str)
 
         if parsed_date:
-            # Convert to MM-dd-yyyy format
-            standardized = parsed_date.strftime('%m-%d-%Y')
+            # Convert to dd/mm/yyyy format
+            standardized = parsed_date.strftime('%d/%m/%Y')
             standardized_dates.append(standardized)
 
             # Check if it was already in the standard format
@@ -254,8 +254,8 @@ def print_report(date_conversion_report, date_errors, imputation_report, origina
     if date_conversion_report:
         total = date_conversion_report['converted'] + date_conversion_report['already_standard']
         print(f"✓ Processed {total} dates:")
-        print(f"  - {date_conversion_report['already_standard']} already in MM-dd-yyyy format")
-        print(f"  - {date_conversion_report['converted']} converted to MM-dd-yyyy format")
+        print(f"  - {date_conversion_report['already_standard']} already in dd/mm/yyyy format")
+        print(f"  - {date_conversion_report['converted']} converted to dd/mm/yyyy format")
 
         if date_conversion_report['errors']:
             print(f"\n✗ Failed to parse {len(date_conversion_report['errors'])} date(s):")
@@ -265,7 +265,7 @@ def print_report(date_conversion_report, date_errors, imputation_report, origina
                 print(f"  ... and {len(date_conversion_report['errors']) - 10} more errors")
 
     # Date validation
-    print("\n2. DATE FORMAT VALIDATION (mm-dd-yyyy)")
+    print("\n2. DATE FORMAT VALIDATION (dd/mm/yyyy)")
     print("-" * 70)
     if not date_errors:
         print("✓ All dates are in correct format")
@@ -343,7 +343,7 @@ Examples:
   python validate_stock_data.py data.csv -max-consecutive 3
 
 What this script does:
-  1. Standardizes all dates to MM-dd-yyyy format (auto-detects input format)
+  1. Standardizes all dates to dd/mm/yyyy format (auto-detects input format)
   2. Validates all dates can be parsed correctly
   3. Identifies missing values in stock price columns
   4. Imputes 1-2 consecutive missing values using forward/backfill
